@@ -18,11 +18,11 @@ apply plugin: 'kotlin-android'
 
 android {
     // TODO: Step 2.1, Target Android 10 and then Android 11.
-    compileSdkVersion 29
+    compileSdkVersion 30
     defaultConfig {
         applicationId "com.example.android.whileinuselocation"
         minSdkVersion 26
-        targetSdkVersion 28
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
     }
