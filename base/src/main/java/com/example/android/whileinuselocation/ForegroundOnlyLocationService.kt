@@ -208,6 +208,15 @@ class ForegroundOnlyLocationService : Service() {
 
         try {
             // TODO: Step 1.6, Unsubscribe to location changes.
+            val removeTask = fusedLocationProviderClient.removeLocationUpdates(locationCallback)
+
+            removeTask.addOnCompleteListener { task ->
+                if(task.isSuccessful) {
+                    Log.d(TAG, "Location Callback removed.")
+                } else {
+                    Log.d(TAG, "Failed to remove Location Callback")
+                }
+            }
 
             SharedPreferenceUtil.saveLocationTrackingPref(this, false)
 
