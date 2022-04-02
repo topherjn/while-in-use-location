@@ -15,6 +15,7 @@
  */
 package com.example.android.whileinuselocation
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -27,7 +28,6 @@ import android.location.Location
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
-import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -93,6 +93,28 @@ class ForegroundOnlyLocationService : Service() {
         }
 
         // TODO: Step 1.4, Initialize the LocationCallback.
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                super.onLocationResult(locationResult)
+
+                currentLocation = locationResult.lastLocation
+
+                val intent = Intent(ACTION_FOREGROUND_ONLY_LOCATION_BROADCAST)
+
+                intent.putExtra(EXTRA_LOCATION, currentLocation)
+
+                LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
+
+                if(serviceRunningInForeground) {
+                    notificationManager.notify(
+                        NOTIFICATION_ID,
+                        generateNotification(currentLocation)
+                    )
+                }
+
+
+            }
+        }
 
     }
 
@@ -195,6 +217,7 @@ class ForegroundOnlyLocationService : Service() {
     /*
      * Generates a BIG_TEXT_STYLE Notification that represent latest location.
      */
+    @SuppressLint("UnspecifiedImmutableFlag")
     private fun generateNotification(location: Location?): Notification {
         Log.d(TAG, "generateNotification()")
 
@@ -210,16 +233,14 @@ class ForegroundOnlyLocationService : Service() {
         val titleText = getString(R.string.app_name)
 
         // 1. Create Notification Channel for O+ and beyond devices (26+).
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            val notificationChannel = NotificationChannel(
-                NOTIFICATION_CHANNEL_ID, titleText, NotificationManager.IMPORTANCE_DEFAULT)
+        val notificationChannel = NotificationChannel(
+            NOTIFICATION_CHANNEL_ID, titleText, NotificationManager.IMPORTANCE_DEFAULT)
 
-            // Adds NotificationChannel to system. Attempting to create an
-            // existing notification channel with its original values performs
-            // no operation, so it's safe to perform the below sequence.
-            notificationManager.createNotificationChannel(notificationChannel)
-        }
+        // Adds NotificationChannel to system. Attempting to create an
+        // existing notification channel with its original values performs
+        // no operation, so it's safe to perform the below sequence.
+        notificationManager.createNotificationChannel(notificationChannel)
 
         // 2. Build the BIG_TEXT_STYLE.
         val bigTextStyle = NotificationCompat.BigTextStyle()
@@ -236,7 +257,7 @@ class ForegroundOnlyLocationService : Service() {
             this, 0, cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val activityPendingIntent = PendingIntent.getActivity(
-            this, 0, launchActivityIntent, 0)
+            this, 0, launchActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         // 4. Build and issue the notification.
         // Notification Channel Id is ignored for Android pre O (26).
