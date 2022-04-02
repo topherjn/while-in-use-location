@@ -28,6 +28,7 @@ import android.location.Location
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -193,6 +194,8 @@ class ForegroundOnlyLocationService : Service() {
 
         try {
             // TODO: Step 1.5, Subscribe to location changes.
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback,
+                Looper.getMainLooper())
 
         } catch (unlikely: SecurityException) {
             SharedPreferenceUtil.saveLocationTrackingPref(this, false)
