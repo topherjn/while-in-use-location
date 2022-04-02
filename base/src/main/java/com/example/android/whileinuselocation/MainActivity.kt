@@ -35,6 +35,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.viewbinding.BuildConfig
+import com.example.android.whileinuselocation.BuildConfig.APPLICATION_ID
 import com.google.android.material.snackbar.Snackbar
 
 private const val TAG = "MainActivity"
@@ -261,11 +263,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                             // Build intent that displays the App settings screen.
                             val intent = Intent()
                             intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                            val uri = Uri.fromParts(
-                                "package",
-                                BuildConfig.APPLICATION_ID,
-                                null
-                            )
+                            val uri = Uri.fromParts("package", BuildConfig.LIBRARY_PACKAGE_NAME, null)
                             intent.data = uri
                             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                             startActivity(intent)
