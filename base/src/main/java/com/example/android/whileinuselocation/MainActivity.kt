@@ -141,21 +141,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             }
         }
 
-        try {
-            val obj = JSONObject(loadJSONFromAsset())
-            val arrondissementsArray = obj.getJSONArray("features")
-            for (i in 0 until arrondissementsArray.length()) {
-                val propertiesArray = arrondissementsArray.getJSONObject(i)
-                //Log.d(TAG, propertiesArray.toString())
-                //Log.d(TAG, propertiesArray["properties"].toString())
-                val property = propertiesArray.getJSONObject("properties")
-                Log.d(TAG, property["l_ar"].toString())
-
-            }
-        }
-        catch (e: JSONException) {
-            e.printStackTrace()
-        }
 
     }
 
@@ -318,21 +303,5 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         }
     }
 
-    private fun loadJSONFromAsset(): String {
-        val json: String?
-        try {
-            val inputStream = assets.open("arrondissements.geojson")
-            val size = inputStream.available()
-            val buffer = ByteArray(size)
-            val charset: Charset = Charsets.UTF_8
-            inputStream.read(buffer)
-            inputStream.close()
-            json = String(buffer, charset)
-        }
-        catch (ex: IOException) {
-            ex.printStackTrace()
-            return ""
-        }
-        return json
-    }
+
 }
