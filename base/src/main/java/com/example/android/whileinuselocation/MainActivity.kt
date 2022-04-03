@@ -26,17 +26,14 @@ import android.provider.Settings
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.viewbinding.BuildConfig
 import com.google.android.material.snackbar.Snackbar
-import com.google.maps.android.data.geojson.GeoJsonLayer
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-import java.io.InputStream
 import java.nio.charset.Charset
 
 private const val TAG = "MainActivity"
@@ -146,9 +143,9 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
         try {
             val obj = JSONObject(loadJSONFromAsset())
-            val userArray = obj.getJSONArray("features")
-            for (i in 0 until userArray.length()) {
-                val userDetail = userArray.getJSONObject(i)
+            val arrondissementsArray = obj.getJSONArray("features")
+            for (i in 0 until arrondissementsArray.length()) {
+                val userDetail = arrondissementsArray.getJSONObject(i)
                 Log.d(TAG, userDetail.toString())
 
             }
