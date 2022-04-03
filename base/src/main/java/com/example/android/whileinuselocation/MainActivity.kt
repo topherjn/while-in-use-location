@@ -145,8 +145,11 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             val obj = JSONObject(loadJSONFromAsset())
             val arrondissementsArray = obj.getJSONArray("features")
             for (i in 0 until arrondissementsArray.length()) {
-                val userDetail = arrondissementsArray.getJSONObject(i)
-                Log.d(TAG, userDetail.toString())
+                val propertiesArray = arrondissementsArray.getJSONObject(i)
+                //Log.d(TAG, propertiesArray.toString())
+                //Log.d(TAG, propertiesArray["properties"].toString())
+                val property = propertiesArray.getJSONObject("properties")
+                Log.d(TAG, property["l_ar"].toString())
 
             }
         }
