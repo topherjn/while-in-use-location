@@ -8,7 +8,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-private const val BASE_URL = "https://api.geoapify.com/v1/geocode/reverse?"
+private const val BASE_URL = "https://api.geoapify.com/v1/geocode/reverse/"
 private const val API_KEY = "33d09ee339e14f5681b6613a8cba93ee"
 
 private val moshi = Moshi.Builder()
@@ -22,7 +22,11 @@ private val retrofit = Retrofit.Builder()
 
 interface ParisPostalApiService {
     @GET(BASE_URL)
-    suspend fun getAddressData(@Query("lat") latitude: String,
+    fun getAddressData(@Query("lat") latitude: String,
                                @Query("lon") longitude: String,
                                @Query("lat") apikey: String = API_KEY,): JSONObject
+}
+
+object ParisPostalApi {
+    val retrofitService: ParisPostalApiService by lazy { retrofit.create(ParisPostalApiService::class.java)}
 }

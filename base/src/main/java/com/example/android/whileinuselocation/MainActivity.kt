@@ -30,6 +30,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.viewbinding.BuildConfig
+import com.example.android.whileinuselocation.network.ParisPostalApi
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.material.snackbar.Snackbar
 import org.json.JSONException
@@ -302,6 +303,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
             if (location != null) {
                 logResultsToScreen("Foreground location: ${location.toText()}")
+                val json = ParisPostalApi.retrofitService.getAddressData(location.latitude.toString(),location.longitude.toString())
+                Log.d(TAG, json.getString("postcode"))
             }
         }
     }

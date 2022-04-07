@@ -31,6 +31,8 @@ import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.example.android.whileinuselocation.network.ParisPostalApi
+import com.example.android.whileinuselocation.network.ParisPostalApiService
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -102,7 +104,7 @@ class ForegroundOnlyLocationService : Service() {
         }
 
         // TODO: Step 1.4, Initialize the LocationCallback.
-        locationCallback = object : LocationCallback() {
+        object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
 
@@ -114,7 +116,7 @@ class ForegroundOnlyLocationService : Service() {
 
                 LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
 
-                if(serviceRunningInForeground) {
+                if (serviceRunningInForeground) {
                     notificationManager.notify(
                         NOTIFICATION_ID,
                         generateNotification(currentLocation)
@@ -122,30 +124,8 @@ class ForegroundOnlyLocationService : Service() {
                 }
 
 
-                try {
-                    val geoJsonData: JSONObject? = JSONObject(loadJSONFromAsset())
-                    val arrondissementsArray = geoJsonData!!.getJSONArray("features")
-
-                    for (i in 0 until arrondissementsArray.length()) {
-                        val propertiesArray = arrondissementsArray.getJSONObject(i)
-                        //Log.d(TAG, propertiesArray.toString())
-                        //Log.d(TAG, propertiesArray["properties"].toString())
-                        val property = propertiesArray.getJSONObject("properties")
-                        val geometry = propertiesArray.getJSONObject("geometry")
-                        val coordinates = geometry.getJSONArray("coordinates")
-                        Log.d(TAG, property["l_ar"].toString())
-                        Log.d(TAG, coordinates.toString())
-                    }
-                }
-                catch (e: JSONException) {
-                    e.printStackTrace()
-                }
-
-
             }
-        }
-
-
+        }.also { locationCallback = it }
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -223,8 +203,10 @@ class ForegroundOnlyLocationService : Service() {
 
         try {
             // TODO: Step 1.5, Subscribe to location changes.
-            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback,
-                Looper.getMainLooper())
+            fusedLocationProviderClient.requestLocationUpdates(
+                locationRequest, locationCallback,
+                Looper.getMainLooper()
+            )
 
         } catch (unlikely: SecurityException) {
             SharedPreferenceUtil.saveLocationTrackingPref(this, false)
@@ -240,7 +222,7 @@ class ForegroundOnlyLocationService : Service() {
             val removeTask = fusedLocationProviderClient.removeLocationUpdates(locationCallback)
 
             removeTask.addOnCompleteListener { task ->
-                if(task.isSuccessful) {
+                if (task.isSuccessful) {
                     Log.d(TAG, "Location Callback removed.")
                 } else {
                     Log.d(TAG, "Failed to remove Location Callback")
@@ -276,7 +258,8 @@ class ForegroundOnlyLocationService : Service() {
         // 1. Create Notification Channel for O+ and beyond devices (26+).
 
         val notificationChannel = NotificationChannel(
-            NOTIFICATION_CHANNEL_ID, titleText, NotificationManager.IMPORTANCE_DEFAULT)
+            NOTIFICATION_CHANNEL_ID, titleText, NotificationManager.IMPORTANCE_DEFAULT
+        )
 
         // Adds NotificationChannel to system. Attempting to create an
         // existing notification channel with its original values performs
@@ -295,10 +278,12 @@ class ForegroundOnlyLocationService : Service() {
         cancelIntent.putExtra(EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION, true)
 
         val servicePendingIntent = PendingIntent.getService(
-            this, 0, cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+            this, 0, cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT
+        )
 
         val activityPendingIntent = PendingIntent.getActivity(
-            this, 0, launchActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+            this, 0, launchActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT
+        )
 
         // 4. Build and issue the notification.
         // Notification Channel Id is ignored for Android pre O (26).
@@ -335,8 +320,7 @@ class ForegroundOnlyLocationService : Service() {
             inputStream.read(buffer)
             inputStream.close()
             json = String(buffer, charset)
-        }
-        catch (ex: IOException) {
+        } catch (ex: IOException) {
             ex.printStackTrace()
             return ""
         }
