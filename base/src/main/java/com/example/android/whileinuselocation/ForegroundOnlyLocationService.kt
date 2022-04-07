@@ -36,13 +36,13 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.model.Polygon
-import com.google.maps.android.data.geojson.GeoJsonLayer
+import com.google.android.gms.maps.GoogleMap
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
+
 
 /**
  * Service tracks location when requested and updates Activity via binding. If Activity is
@@ -81,6 +81,9 @@ class ForegroundOnlyLocationService : Service() {
     // last location to create a Notification if the user navigates away from the app.
     private var currentLocation: Location? = null
 
+    private lateinit var map: GoogleMap
+    private val REQUEST_LOCATION_PERMISSION = 1
+
     override fun onCreate() {
         Log.d(TAG, "onCreate()")
 
@@ -118,9 +121,11 @@ class ForegroundOnlyLocationService : Service() {
                     )
                 }
 
+
                 try {
                     val geoJsonData: JSONObject? = JSONObject(loadJSONFromAsset())
                     val arrondissementsArray = geoJsonData!!.getJSONArray("features")
+
                     for (i in 0 until arrondissementsArray.length()) {
                         val propertiesArray = arrondissementsArray.getJSONObject(i)
                         //Log.d(TAG, propertiesArray.toString())
@@ -363,5 +368,9 @@ class ForegroundOnlyLocationService : Service() {
         private const val NOTIFICATION_ID = 12345678
 
         private const val NOTIFICATION_CHANNEL_ID = "while_in_use_channel_01"
+
+        // Create a GeoJSON point representation of the locations.
+        //private val TOWER_BRIDGE = Point.fromLngLat(-0.07515, 51.50551)
+        //private val LONDON_EYE = Point.fromLngLat(-0.12043, 51.50348)
     }
 }
