@@ -26,7 +26,6 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.location.Location
 import android.os.Binder
-import android.os.Build
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
@@ -37,6 +36,12 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.Polygon
+import com.google.maps.android.data.geojson.GeoJsonLayer
+import org.json.JSONException
+import org.json.JSONObject
+import java.io.IOException
+import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
 
 /**
@@ -113,9 +118,28 @@ class ForegroundOnlyLocationService : Service() {
                     )
                 }
 
+                try {
+                    val geoJsonData: JSONObject? = JSONObject(loadJSONFromAsset())
+                    val arrondissementsArray = geoJsonData!!.getJSONArray("features")
+                    for (i in 0 until arrondissementsArray.length()) {
+                        val propertiesArray = arrondissementsArray.getJSONObject(i)
+                        //Log.d(TAG, propertiesArray.toString())
+                        //Log.d(TAG, propertiesArray["properties"].toString())
+                        val property = propertiesArray.getJSONObject("properties")
+                        val geometry = propertiesArray.getJSONObject("geometry")
+                        val coordinates = geometry.getJSONArray("coordinates")
+                        Log.d(TAG, property["l_ar"].toString())
+                        Log.d(TAG, coordinates.toString())
+                    }
+                }
+                catch (e: JSONException) {
+                    e.printStackTrace()
+                }
+
 
             }
         }
+
 
     }
 
@@ -294,6 +318,24 @@ class ForegroundOnlyLocationService : Service() {
                 servicePendingIntent
             )
             .build()
+    }
+
+    private fun loadJSONFromAsset(): String {
+        val json: String?
+        try {
+            val inputStream = assets.open("arrondissements.geojson")
+            val size = inputStream.available()
+            val buffer = ByteArray(size)
+            val charset: Charset = Charsets.UTF_8
+            inputStream.read(buffer)
+            inputStream.close()
+            json = String(buffer, charset)
+        }
+        catch (ex: IOException) {
+            ex.printStackTrace()
+            return ""
+        }
+        return json
     }
 
     /**

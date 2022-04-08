@@ -16,13 +16,7 @@
 package com.example.android.whileinuselocation
 
 import android.Manifest
-import android.content.BroadcastReceiver
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.content.ServiceConnection
-import android.content.SharedPreferences
+import android.content.*
 import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
@@ -36,8 +30,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.viewbinding.BuildConfig
-import com.example.android.whileinuselocation.BuildConfig.APPLICATION_ID
 import com.google.android.material.snackbar.Snackbar
+import org.json.JSONException
+import org.json.JSONObject
+import java.io.IOException
+import java.nio.charset.Charset
 
 private const val TAG = "MainActivity"
 private const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
@@ -143,6 +140,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                 }
             }
         }
+
+
     }
 
     override fun onStart() {
@@ -237,6 +236,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         permissions: Array<String>,
         grantResults: IntArray
     ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         Log.d(TAG, "onRequestPermissionResult")
 
         when (requestCode) {
@@ -302,4 +302,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             }
         }
     }
+
+
 }
